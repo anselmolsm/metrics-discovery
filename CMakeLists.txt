@@ -205,6 +205,26 @@ endif ()
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON)
 
+# parse the full version number from metrics_discovery_api.h and set MD_VERSION
+file(READ ${CMAKE_CURRENT_SOURCE_DIR}/inc/common/instrumentation/api/metrics_discovery_api.h _md_h_contents)
+
+#major
+string(REGEX MATCH "MD_API_MAJOR_NUMBER_CURRENT[ \t]*=[ \t]*MD_API_MAJOR_NUMBER_[0-9]*" _MAJOR ${_md_h_contents})
+string(REGEX MATCH "[0-9].*" MD_VERSION_MAJOR ${_MAJOR})
+
+#minor
+string(REGEX MATCH "MD_API_MINOR_NUMBER_CURRENT[ \t]*=[ \t]*MD_API_MINOR_NUMBER_[0-9]*" _MINOR ${_md_h_contents})
+string(REGEX MATCH "[0-9].*" MD_VERSION_MINOR ${_MINOR})
+
+#build
+string(REGEX MATCH "MD_API_BUILD_NUMBER_CURRENT[ \t]*[0-9]*" _BUILD ${_md_h_contents})
+string(REGEX MATCH "[0-9].*" MD_VERSION_BUILD ${_BUILD})
+
+SET(MD_VERSION ${MD_VERSION_MAJOR}.${MD_VERSION_MINOR}.${MD_VERSION_BUILD})
+
+set_property(TARGET ${PROJECT_NAME} PROPERTY VERSION ${MD_VERSION})
+set_property(TARGET ${PROJECT_NAME} PROPERTY SOVERSION ${MD_VERSION_MAJOR})
+
 #################################################################################
 # INSTALL
 #################################################################################
